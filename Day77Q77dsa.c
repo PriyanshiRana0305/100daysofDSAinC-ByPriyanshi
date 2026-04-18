@@ -16,40 +16,52 @@ Sample Input
 
 Sample Output
 NOT CONNECTED*/
-// LeetCode 133: Clone Graph (C - DFS)
+#include <stdio.h>
 
-// Definition for a Node
-struct Node {
-    int val;
-    int numNeighbors;
-    struct Node** neighbors;
-};
+#define MAX 1000
 
-// Array to store cloned nodes (index = node value)
-struct Node* visited[101];
+int adj[MAX][MAX], visited[MAX];
 
-// DFS function to clone graph
-struct Node* cloneGraph(struct Node* node) {
-    if (node == NULL)
-        return NULL;
+// DFS function
+void dfs(int v, int n) {
+    visited[v] = 1;
+    for (int i = 1; i <= n; i++) {
+        if (adj[v][i] && !visited[i]) {
+            dfs(i, n);
+        }
+    }
+}
 
-    // If already cloned, return it
-    if (visited[node->val] != NULL)
-        return visited[node->val];
+int main() {
+    int n, m, u, v;
+    scanf("%d %d", &n, &m);
 
-    // Create new node
-    struct Node* clone = (struct Node*)malloc(sizeof(struct Node));
-    clone->val = node->val;
-    clone->numNeighbors = node->numNeighbors;
-    clone->neighbors = (struct Node**)malloc(sizeof(struct Node*) * node->numNeighbors);
-
-    // Mark as visited
-    visited[node->val] = clone;
-
-    // Clone neighbors recursively
-    for (int i = 0; i < node->numNeighbors; i++) {
-        clone->neighbors[i] = cloneGraph(node->neighbors[i]);
+    // initialize
+    for (int i = 1; i <= n; i++) {
+        visited[i] = 0;
+        for (int j = 1; j <= n; j++) {
+            adj[i][j] = 0;
+        }
     }
 
-    return clone;
+    // input edges
+    for (int i = 0; i < m; i++) {
+        scanf("%d %d", &u, &v);
+        adj[u][v] = 1;
+        adj[v][u] = 1;
+    }
+
+    // run DFS from node 1
+    dfs(1, n);
+
+    // check connectivity
+    for (int i = 1; i <= n; i++) {
+        if (!visited[i]) {
+            printf("NOT CONNECTED\n");
+            return 0;
+        }
+    }
+
+    printf("CONNECTED\n");
+    return 0;
 }
